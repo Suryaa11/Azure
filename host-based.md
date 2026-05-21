@@ -1,5 +1,3 @@
-<img width="758" height="679" alt="agw" src="https://github.com/user-attachments/assets/19d6ef48-c696-4be2-8891-6b29f96fb863" />
-
 # Domain-Based Routing using Azure Application Gateway WAF with Private Virtual Machines and NAT Gateway
 
 ## Architecture Overview
@@ -11,8 +9,9 @@ Both applications are deployed on separate private VMs inside the same virtual n
 ------------------------------------------------------------
 FINAL ARCHITECTURE
 ------------------------------------------------------------
+<img width="758" height="679" alt="agw drawio" src="https://github.com/user-attachments/assets/e865b371-2164-4588-9222-006fd6b68f66" />
 
-<img width="758" height="679" alt="agw" src="https://github.com/user-attachments/assets/2dd85510-a527-4c66-9253-5fc6e846ea2b" />
+
 
 ------------------------------------------------------------
 RESOURCES CREATED
