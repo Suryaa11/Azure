@@ -1,3 +1,5 @@
+<img width="758" height="679" alt="agw" src="https://github.com/user-attachments/assets/19d6ef48-c696-4be2-8891-6b29f96fb863" />
+
 # Domain-Based Routing using Azure Application Gateway WAF with Private Virtual Machines and NAT Gateway
 
 ## Architecture Overview
@@ -10,29 +12,7 @@ Both applications are deployed on separate private VMs inside the same virtual n
 FINAL ARCHITECTURE
 ------------------------------------------------------------
 
-                    Internet
-                        │
-                        ▼
-                      DNS
-                        │
-                        ▼
-        Application Gateway WAF v2
-                        │
-         ┌──────────────┴──────────────┐
-         │                             │
-         ▼                             ▼
-  app1.domain.com              app2.domain.com
-         │                             │
-         ▼                             ▼
-      Private VM 1                 Private VM 2
-     (Application 1)              (Application 2)
-               │                     │
-               └──────────┬──────────┘
-                          ▼
-                    NAT Gateway
-                          │
-                          ▼
-                     Internet
+<img width="758" height="679" alt="agw" src="https://github.com/user-attachments/assets/2dd85510-a527-4c66-9253-5fc6e846ea2b" />
 
 ------------------------------------------------------------
 RESOURCES CREATED
@@ -108,8 +88,8 @@ These NSGs were associated with the virtual machines to control inbound and outb
 
 Inbound Rules Configured:
 
-Port 22  → SSH Access
-Port 80  → HTTP Traffic
+Port 22  → SSH Access  
+Port 80  → HTTP Traffic  
 Port 443 → HTTPS Traffic
 
 ------------------------------------------------------------
@@ -120,9 +100,9 @@ Two Ubuntu virtual machines were created inside the VM subnet.
 
 Configuration:
 
-Operating System : Ubuntu 22.04
-Region           : Central India
-Public IP        : None
+Operating System : Ubuntu 22.04  
+Region           : Central India  
+Public IP        : None  
 Network Type     : Private
 
 Both VMs were intentionally deployed without public IP addresses for better security.
@@ -140,6 +120,90 @@ VM2:
 Hosted Application 2
 
 Both applications run independently and are exposed using separate subdomains through Application Gateway routing rules.
+
+------------------------------------------------------------
+VM1 DEPLOYMENT SCRIPT
+------------------------------------------------------------
+
+```bash
+#!/bin/bash
+cd /home/surya
+apt-get update -y
+apt-get install nginx -y
+apt-get install nodejs -y
+apt-get install npm -y
+apt-get install git -y
+
+git clone https://github.com/Suryaa11/Fitness_Tracker.git
+
+cat <<EOF > /etc/nginx/sites-available/custom
+server {
+    listen 80;
+    server_name _;
+    location / {
+        proxy_pass http://localhost:5000;
+    }
+}
+EOF
+
+ln -s /etc/nginx/sites-available/custom /etc/nginx/sites-enabled/
+
+cd /etc/nginx/sites-enabled
+rm -rf default
+
+systemctl restart nginx
+
+cd /home/surya/Fitness_Tracker/server
+
+npm install -g pm2
+
+pm2 start app.js --name "fitness-app"
+
+pm2 save
+pm2 startup
+```
+
+------------------------------------------------------------
+VM2 DEPLOYMENT SCRIPT
+------------------------------------------------------------
+
+```bash
+#!/bin/bash
+cd /home/surya
+apt-get update -y
+apt-get install nginx -y
+apt-get install nodejs -y
+apt-get install npm -y
+apt-get install git -y
+
+git clone https://github.com/Msocial123/organic-ghee.git
+
+cat <<EOF > /etc/nginx/sites-available/custom
+server {
+    listen 80;
+    server_name _;
+    location / {
+        proxy_pass http://localhost:5656;
+    }
+}
+EOF
+
+ln -s /etc/nginx/sites-available/custom /etc/nginx/sites-enabled/
+
+cd /etc/nginx/sites-enabled
+rm -rf default
+
+systemctl restart nginx
+
+cd /home/surya/organic-ghee
+
+npm install -g pm2
+
+pm2 start src/app.js --name "organic-app"
+
+pm2 save
+pm2 startup
+```
 
 ------------------------------------------------------------
 STEP 6 — CREATE NAT GATEWAY
@@ -162,9 +226,11 @@ STEP 7 — VERIFY OUTBOUND CONNECTIVITY
 
 Outbound internet access was verified from both VMs using commands such as:
 
+```bash
 sudo apt update
 
 curl google.com
+```
 
 The outbound requests were routed through the NAT Gateway.
 
